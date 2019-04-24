@@ -1,49 +1,87 @@
+%Housekeeping
 clc 
 clear
+
 % Domain Initialization
 % Domain: -pi<X<pi   -pi<y<pi
-Sx = -pi;
-Sy = -pi;
-Ex = pi;
-Ey = pi;
+Ax = -pi;
+Ay = -pi;
+Bx = pi;
+By = pi;
+
 % Starting by Discretizing FEB 5th PAGE 2 BOT
 % L: number of points, h: interval, N: number of points
-Lx = Ex-Sx
-Ly = Ey-Sy
+Lx = Bx-Ax
+Ly = By-Ay
 Nx = 50;
 Ny = 50;
 hx = Lx/(Nx-1)
 hy = Ly/(Ny-1)
 
 
-%Hello Ghosts Nodes
-Startx = Sx-hx
-Starty = Sy-hy
-Endx = Ex+hx;
-Endy = Ey+hy;
+% %Hello Ghosts Nodes    - Screw these for now
+% Startx = Ax-hx
+% Starty = Ay-hy
+% Endx = Bx+hx;
+% Endy = By+hy;
+
+
+
 
 %Discretly 
 m=1
 for n = Startx:hx:Endx
     
-    Ux(m) =n;
+    x(m) =n;
     m = m + 1;
 
 end
 m=1
 for n = Starty:hy:Endy
     
-    Uy(m) = n;
+    y(m) = n;
     m = m + 1;
 
 end
+
+
+
+%Fuck Yeah Boundary Conditions
+% LB: Left Boundary
+GLB = ((Bx-Ax)^2)*cos(((pi*Ax)/Bx))
+FLB = Ax*((Bx-Ax)^2)
+ULB = GLB + ((y-Ay)./(By-Ay)).*(FLB-GLB)
+
+% Right Boundary Condition U = Constant
+% Using the Upper or Lower Boundary Conidtions I can solve for the right side
+% RB: Right Boundary
+GRB = ((Bx-Bx)^2)*cos(((pi*Bx)/Bx))
+FRB = Bx*((Bx-Bx)^2)
+
+% Using Bottom BC U(x,ay) = GB(X) on bottom right corner but the whole right
+% side is constant so the corner is the same as the rest
+URB = GRB
+
+% Verification Using Top BC U(x,by) = FB(X)
+URB_ver = FRB
+
+% Verified U(bx,y) = 0
+
+% TB: Top Boundary
+FTB = x.*((Bx-x).^2)
+UTB = FTB
+
+% BB: Bottom Boundary
+GBB = ((Bx-x).^2).*cos(((pi.*x)./Bx));
+UBB = GBB;
+
 
 
 % It Begins 
 
 % lamb = 
 
-% for n = Sx:hx:Lx
+% for n = Ax:hx:Lx
 %    
 %     U(n) = ((n-h)-2n+(n+h))/(h^2) 
 %     
@@ -51,3 +89,8 @@ end
 %     
 %     
 % end
+
+
+%The Goal
+% U = a + int(f(T)dt 0->t APRIL 17 PAGE 1 TOP
+% For this problem a =  
