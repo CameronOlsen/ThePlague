@@ -19,12 +19,16 @@ hx = Lx/(Nx-1)
 hy = Ly/(Ny-1)
 
 
-% %Hello Ghosts Nodes    - Screw these for now
+%Hello Ghosts Nodes
 % Startx = Ax-hx
 % Starty = Ay-hy
 % Endx = Bx+hx;
 % Endy = By+hy;
 
+Startx = Ax;
+Starty = Ay;
+Endx = Bx;
+Endy = By;
 
 
 
@@ -59,11 +63,11 @@ GRB = ((Bx-Bx)^2)*cos(((pi*Bx)/Bx))
 FRB = Bx*((Bx-Bx)^2)
 
 % Using Bottom BC U(x,ay) = GB(X) on bottom right corner but the whole right
-% side is constant so the corner is the same as the rest
-URB = GRB
-
-% Verification Using Top BC U(x,by) = FB(X)
-URB_ver = FRB
+% % side is constant so the corner is the same as the rest
+% URB = GRB
+%                UNSURE
+% % Verification Using Top BC U(x,by) = FB(X)
+% URB_ver = FRB
 
 % Verified U(bx,y) = 0
 
@@ -75,9 +79,15 @@ UTB = FTB
 GBB = ((Bx-x).^2).*cos(((pi.*x)./Bx));
 UBB = GBB;
 
+ULBT = ULB'
 
-
+%Let make a big ass matrix
+ U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB]
 % It Begins 
+
+
+
+
 
 % lamb = 
 
