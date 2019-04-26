@@ -1,6 +1,6 @@
 %Housekeeping
 clc 
-clear
+clear 
 
 % Domain Initialization
 % Domain: -pi<X<pi   -pi<y<pi
@@ -17,7 +17,7 @@ Nx = 50;
 Ny = 50;
 hx = Lx/(Nx-1)
 hy = Ly/(Ny-1)
-
+ht = .001
 
 %Hello Ghosts Nodes
 % Startx = Ax-hx
@@ -83,12 +83,18 @@ ULBT = ULB'
 
 %Let make a big ass matrix
  U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB]
+ 
+ 
 % It Begins 
 
+syms D
+Un = U
+for i = 1:Nx
+    for j = Ny
+ Un = (U(i+1,j)-2*U(i,j)+U(i-1,j))*((ht*D)/(hx^2)) + (U(i,j+1)-2*U(i,j)+U(i,j-1))*((ht*D)/(hy^2))+ U(i,j)
 
-
-
-
+    end
+end
 % lamb = 
 
 % for n = Ax:hx:Lx
