@@ -76,25 +76,25 @@ ULBT = ULB'
 % It Begins 
 
 syms D
-v=0
+v=
 Nt=4
-Un = zeros(Ny,Nx+1,Nt)
+Un = zereos(Ny,Nx+1,Nt)
 Un(:,:,1) = U
 for k = 0:ht:3
    v=v+1 
 for i = 2:Nx-1
     for j = 2:Ny-1
- Un(i,j,v+1) = (Un(i+1,j,v)-2*Un(i,j,v)+Un(i-1,j,v))*((ht*D)/(hx^2)) + (Un(i,j+1,v)-2*Un(i,j,v)+Un(i,j-1,v))*((ht*D)/(hy^2))+ Un(i,j,v)
+ Un(i,j,v) = (Un(i+1,j)-2*Un(i,j)+Un(i-1,j))*((ht*D)/(hx^2)) + (Un(i,j+1)-2*Un(i,j)+Un(i,j-1))*((ht*D)/(hy^2))+ Un(i,j)
 
     end
 end
 %Adding BC
-% Un(:,:,v+1) = [Un, zeros(Ny-1,1);zeros(1,Nx)]
-Un(1,:,v+1) = UTB;
-Un(Ny,:,v+1) = UBB;
+Un = [Un, zeros(Ny-1,1);zeros(1,Nx)]
+Un(1,:) = UTB;
+Un(Ny,:) = UBB;
 
-Un(:,1,v+1) = ULB;
-Un(:,Nx+1,v+1) = Un(:,Nx-1,v+1)
+Un(:,1) = ULB;
+Un(:,Nx+1) = Un(:,Nx-1)
 
  end
 % lamb = 
