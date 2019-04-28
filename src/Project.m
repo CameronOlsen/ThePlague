@@ -73,30 +73,64 @@ ULBT = ULB'
  U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB]
  U = [U,zeros(Ny,1)]
  
-% It Begins 
+ 
+ % Setup only temporary
+ D = 4
+ Nt=4
+ 
+ 
+% It Begins Explicit 
 
-syms D
 v=0
-Nt=4
-Un = zeros(Ny,Nx+1,Nt)
-Un(:,:,1) = U
-for k = 0:ht:3
+
+UnE = zeros(Ny,Nx+1,Nt)
+UnE(:,:,1) = U
+
+for k = 0:ht:4
    v=v+1 
 for i = 2:Nx-1
     for j = 2:Ny-1
- Un(i,j,v+1) = (Un(i+1,j,v)-2*Un(i,j,v)+Un(i-1,j,v))*((ht*D)/(hx^2)) + (Un(i,j+1,v)-2*Un(i,j,v)+Un(i,j-1,v))*((ht*D)/(hy^2))+ Un(i,j,v)
+ UnE(i,j,v+1) = (UnE(i+1,j,v)-2*UnE(i,j,v)+UnE(i-1,j,v))*((ht*D)/(hx^2)) + (UnE(i,j+1,v)-2*UnE(i,j,v)+UnE(i,j-1,v))*((ht*D)/(hy^2))+ UnE(i,j,v)
 
     end
 end
 %Adding BC
 % Un(:,:,v+1) = [Un, zeros(Ny-1,1);zeros(1,Nx)]
-Un(1,:,v+1) = UTB;
-Un(Ny,:,v+1) = UBB;
+UnE(1,1:Nx,v+1) = UTB;
+UnE(Ny,1:Nx,v+1) = UBB;
 
-Un(:,1,v+1) = ULB;
-Un(:,Nx+1,v+1) = Un(:,Nx-1,v+1)
+UnE(:,1,v+1) = ULB;
+UnE(:,Nx+1,v+1) = UnE(:,Nx-1,v+1)
 
- end
+end
+ 
+
+
+% Implicit
+
+v=1
+Nt=12
+UnI = zeros(Ny,Nx+1,Nt)
+UnI(:,:,1) = U
+UnI(:,:,2) = U
+for k = 0:ht:10
+   v=v+1 
+for i = 2:Nx-1
+    for j = 2:Ny-1
+ UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (UnI(i,j+1,v)-2*UnI(i,j,v)+UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1)
+
+    end
+end
+%Adding BC
+% Un(:,:,v+1) = [Un, zeros(Ny-1,1);zeros(1,Nx)]
+UnI(1,1:Nx,v) = UTB;
+UnI(Ny,1:Nx,v) = UBB;
+
+UnI(:,1,v) = ULB;
+UnI(:,Nx+1,v) = UnI(:,Nx-1,v)
+
+end
+ 
 % lamb = 
 
 % for n = Ax:hx:Lx
