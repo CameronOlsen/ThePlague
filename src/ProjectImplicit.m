@@ -13,8 +13,8 @@ By = pi;
 % L: number of points, h: interval, N: number of points
 Lx = Bx-Ax
 Ly = By-Ay
-Nx = 10;
-Ny = 10;
+Nx = 5;
+Ny = 5;
 hx = Lx/(Nx-1)
 hy = Ly/(Ny-1)
 ht = 1
@@ -78,21 +78,26 @@ ULBT = ULB'
  Nt=4
  
  
-% It Begins Implicit 
+% Implicit Method
 
 Nxy= Nx*Ny
+Lambx = 2
+Lamby = 3
 %Matrix of Coefficeints 
 A = zeros(Nxy,Nxy);
-for i = 1:Nxy
-    for j = 1:Nxy
-       A(i,i) = 1 ;
-        
+for i = 2:Nxy
+    for j = 2:Nxy-1
+       A(i,i) = -Lamby;
+       A(i,i+(Ny-1)) = -Lambx
+       A(i,i+Ny) = 2*Lambx+2*Lamby+1
+       A(i,i+(Ny+1)) = -Lambx
+       A(i,i+2*Ny) = -Lamby 
     end
 end
 
+A=A(1:Nxy,1:Nxy)
 
-
-
+%Pentagonal Matrix Made now I just need to input B.C. and solve
 
 
 
