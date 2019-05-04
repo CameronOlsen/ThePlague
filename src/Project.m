@@ -17,24 +17,14 @@ Nx = 20;
 Ny = 20;
 hx = Lx/(Nx-1)
 hy = Ly/(Ny-1)
-ht = 1
+
 
 
 %Discretly 
 m=1
-for n = Ax:hx:Bx
-    
-    x(m) =n;
-    m = m + 1;
 
-end
-m=1
-for n = Ay:hy:By
-    
-    y(m) = n;
-    m = m + 1;
-
-end
+x = Ax:hx:Bx
+y = Ay:hy:By
 
 
 
@@ -74,21 +64,19 @@ ULBT = ULB'
  
  
  % Setup only temporary
- D = .01;
- Nt=300;
-
- 
- 
+ D = 1;
+ % Von Neumann Stability Method
+ ht = (hx^2)/(D*4)
+ Bt=20;
+ Nt=round(Bt/ht)-1;
 % It Begins Explicit 
 
 v=0
 
 UnE = zeros(Ny,Nx,Nt);
 UnE(:,:,1) = U;
- % Lambda 1 and 2 must be less than 1/2 for this to be stable
- if D*ht/(hx*hx)<=.5
-     if D*ht/(hx*hx)<=.5
-for k = 0:ht:300
+
+for k = 0:ht:Bt
    v=v+1 
 for i = 2:Ny-1
     for j = 2:Nx
@@ -107,31 +95,11 @@ UnE(1,1:Nx,v+1) = UTB;
 UnE(Ny,1:Nx,v+1) = UBB;
 UnE(:,1,v+1) = ULB;
 
-        h= surf(x,y,UnE(:,:,k+1));
+        h= surf(x,y,UnE(:,:,v+1));
             drawnow;
             refreshdata(h)
 end
 
  UnE
-     else
-         fprintf("Will not Converge")
-     end
- else
-      fprintf("Will not Converge")
- end
- 
-% lamb = 
-
-% for n = Ax:hx:Lx
-%    
-%     U(n) = ((n-h)-2n+(n+h))/(h^2) 
-%     
-%     
-%     
-%     
-% end
 
 
-%The Goal
-% U = a + int(f(T)dt 0->t APRIL 17 PAGE 1 TOP
-% For this problem a =  
