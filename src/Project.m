@@ -1,7 +1,7 @@
 %Housekeeping
 clc 
 clear 
-
+tic
 % Domain Initialization
 % Domain: -pi<X<pi   -pi<y<pi
 Ax = -pi;
@@ -13,15 +13,15 @@ By = pi;
 % L: number of points, h: interval, N: number of points
 Lx = Bx-Ax
 Ly = By-Ay
-Nx = 20;
-Ny = 20;
+Nx = 30;
+Ny = 30;
+Bt=10;
 hx = Lx/(Nx-1)
 hy = Ly/(Ny-1)
 
 
 
 %Discretly 
-m=1
 
 x = Ax:hx:Bx
 y = Ay:hy:By
@@ -63,12 +63,15 @@ ULBT = ULB'
  U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB];
  
  
- % Setup only temporary
+ % Assuming 
  D = 1;
+ 
  % Von Neumann Stability Method
- ht = (hx^2)/(D*4)
- Bt=20;
+%  ht = (hx^2)/(D*4)
+ht = ((hx^2)*(hy^2))/(2*D*((hx^2)+(hy^2)))
  Nt=round(Bt/ht)-1;
+ 
+ 
 % It Begins Explicit 
 
 v=0
@@ -96,10 +99,11 @@ UnE(Ny,1:Nx,v+1) = UBB;
 UnE(:,1,v+1) = ULB;
 
         h= surf(x,y,UnE(:,:,v+1));
+        set(h,'edgecolor','none')
             drawnow;
             refreshdata(h)
 end
 
- UnE
-
+ UnE;
+toc
 

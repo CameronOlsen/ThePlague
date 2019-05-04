@@ -80,53 +80,81 @@ ULBT = ULB'
  
 % It Begins Implicit 
 
-v=0
-
-UnE = zeros(Ny,Nx,Nt)
-UnE(:,:,1) = U
-
-
-v=1
-Nt=12
-UnI = zeros(Ny,Nx,Nt)
-UnI(:,:,1) = U
-UnI(:,:,2) = U
-
-for k = 0:ht:10
-   v=v+1 
-for i = 2:Ny-1
-    for j = 2:Nx
-        if j == Nx
-         UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (-2*UnI(i,j,v)+2*UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1);    
-        else
-        UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (UnI(i,j+1,v)-2*UnI(i,j,v)+UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1);
-        end
+Nxy= Nx*Ny
+%Matrix of Coefficeints 
+A = zeros(Nxy,Nxy);
+for i = 1:Nxy
+    for j = 1:Nxy
+       A(i,i) = 1 ;
+        
     end
 end
-%Adding BC
-% Un(:,:,v+1) = [Un, zeros(Ny-1,1);zeros(1,Nx)]
-UnE(1,1:Nx,v+1) = UTB;
-UnE(Ny,1:Nx,v+1) = UBB;
-
-UnE(:,1,v+1) = ULB;
-% UnE(:,Nx+1,v+1) = UnE(:,Nx-1,v+1)
 
 
-end
- 
-UnE
-% lamb = 
 
-% for n = Ax:hx:Lx
-%    
-%     U(n) = ((n-h)-2n+(n+h))/(h^2) 
-%     
-%     
-%     
-%     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% v=0
+% 
+% UnE = zeros(Ny,Nx,Nt)
+% UnE(:,:,1) = U
+% 
+% 
+% v=1
+% Nt=12
+% UnI = zeros(Ny,Nx,Nt)
+% UnI(:,:,1) = U
+% UnI(:,:,2) = U
+% 
+% for k = 0:ht:10
+%    v=v+1 
+% for i = 2:Ny-1
+%     for j = 2:Nx
+%         if j == Nx
+%          UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (-2*UnI(i,j,v)+2*UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1);    
+%         else
+%         UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (UnI(i,j+1,v)-2*UnI(i,j,v)+UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1);
+%         end
+%     end
 % end
-
-
-%The Goal
-% U = a + int(f(T)dt 0->t APRIL 17 PAGE 1 TOP
-% For this problem a =  
+% %Adding BC
+% % Un(:,:,v+1) = [Un, zeros(Ny-1,1);zeros(1,Nx)]
+% UnE(1,1:Nx,v+1) = UTB;
+% UnE(Ny,1:Nx,v+1) = UBB;
+% 
+% UnE(:,1,v+1) = ULB;
+% % UnE(:,Nx+1,v+1) = UnE(:,Nx-1,v+1)
+% 
+% 
+% end
+%  
+% UnE
