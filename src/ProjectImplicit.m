@@ -13,8 +13,8 @@ By = pi;
 % L: number of points, h: interval, N: number of points
 Lx = Bx-Ax
 Ly = By-Ay
-Nx = 20;
-Ny = 20;
+Nx = 10;
+Ny = 10;
 hx = Lx/(Nx-1)
 hy = Ly/(Ny-1)
 ht = 1
@@ -40,15 +40,15 @@ end
 
 %Fuck Yeah Boundary Conditions
 % LB: Left Boundary
-GLB = ((Bx-Ax)^2)*cos(((pi*Ax)/Bx));
-FLB = Ax*((Bx-Ax)^2);
-ULB = GLB + ((y-Ay)./(By-Ay)).*(FLB-GLB);
+GLB = ((Bx-Ax)^2)*cos(((pi*Ax)/Bx))
+FLB = Ax*((Bx-Ax)^2)
+ULB = GLB + ((y-Ay)./(By-Ay)).*(FLB-GLB)
 
 % Right Boundary Condition U = Constant
 % Using the Upper or Lower Boundary Conidtions I can solve for the right side
 % RB: Right Boundary
-GRB = ((Bx-Bx)^2)*cos(((pi*Bx)/Bx));
-FRB = Bx*((Bx-Bx)^2);
+GRB = ((Bx-Bx)^2)*cos(((pi*Bx)/Bx))
+FRB = Bx*((Bx-Bx)^2)
 
 % Using Bottom BC U(x,ay) = GB(X) on bottom right corner but the whole right
 % % side is constant so the corner is the same as the rest
@@ -60,8 +60,8 @@ FRB = Bx*((Bx-Bx)^2);
 % Verified U(bx,y) = 0
 
 % TB: Top Boundary
-FTB = x.*((Bx-x).^2);
-UTB = FTB;
+FTB = x.*((Bx-x).^2)
+UTB = FTB
 
 % BB: Bottom Boundary
 GBB = ((Bx-x).^2).*cos(((pi.*x)./Bx));
@@ -70,56 +70,51 @@ UBB = GBB;
 ULBT = ULB'
 
 %Let make a big ass matrix
- U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB];
+ U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB]
  
  
  % Setup only temporary
- D = .01;
- Nt=300;
-
+ D = .1
+ Nt=4
  
  
-% It Begins Explicit 
+% It Begins Implicit 
 
 v=0
 
-UnE = zeros(Ny,Nx,Nt);
-UnE(:,:,1) = U;
- % Lambda 1 and 2 must be less than 1/2 for this to be stable
- if D*ht/(hx*hx)<=.5
-     if D*ht/(hx*hx)<=.5
-for k = 0:ht:300
+UnE = zeros(Ny,Nx,Nt)
+UnE(:,:,1) = U
+
+
+v=1
+Nt=12
+UnI = zeros(Ny,Nx,Nt)
+UnI(:,:,1) = U
+UnI(:,:,2) = U
+
+for k = 0:ht:10
    v=v+1 
 for i = 2:Ny-1
     for j = 2:Nx
- 
         if j == Nx
-            UnE(i,j,v+1) = (UnE(i+1,j,v)-2*UnE(i,j,v)+UnE(i-1,j,v))*((ht*D)/(hx^2)) + (-2*UnE(i,j,v)+2*UnE(i,j-1,v))*((ht*D)/(hy^2))+ UnE(i,j,v);   
-     
+         UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (-2*UnI(i,j,v)+2*UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1);    
         else
-        UnE(i,j,v+1) = (UnE(i+1,j,v)-2*UnE(i,j,v)+UnE(i-1,j,v))*((ht*D)/(hx^2)) + (UnE(i,j+1,v)-2*UnE(i,j,v)+UnE(i,j-1,v))*((ht*D)/(hy^2))+ UnE(i,j,v);
-
+        UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (UnI(i,j+1,v)-2*UnI(i,j,v)+UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1);
         end
     end
 end
 %Adding BC
+% Un(:,:,v+1) = [Un, zeros(Ny-1,1);zeros(1,Nx)]
 UnE(1,1:Nx,v+1) = UTB;
 UnE(Ny,1:Nx,v+1) = UBB;
+
 UnE(:,1,v+1) = ULB;
+% UnE(:,Nx+1,v+1) = UnE(:,Nx-1,v+1)
 
-        h= surf(x,y,UnE(:,:,k+1));
-            drawnow;
-            refreshdata(h)
+
 end
-
- UnE
-     else
-         fprintf("Will not Converge")
-     end
- else
-      fprintf("Will not Converge")
- end
  
+UnE
 % lamb = 
 
 % for n = Ax:hx:Lx
