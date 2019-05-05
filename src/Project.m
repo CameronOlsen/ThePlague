@@ -65,20 +65,23 @@ v=0
 UnE = zeros(Ny,Nx,Nt);
 UnE(:,:,1) = U;
 
+%Initializing Time Step
 for k = 0:ht:Bt
    v=v+1 
-for i = 2:Ny-1
+   %Space Step X
     for j = 2:Nx
+    %Space Step Y
+        for i = 2:Ny-1
  
-        if j == Nx
+            if j == Nx
             UnE(i,j,v+1) = (UnE(i+1,j,v)-2*UnE(i,j,v)+UnE(i-1,j,v))*((ht*D)/(hx^2)) + (-2*UnE(i,j,v)+2*UnE(i,j-1,v))*((ht*D)/(hy^2))+ UnE(i,j,v);   
      
-        else
+            else
         UnE(i,j,v+1) = (UnE(i+1,j,v)-2*UnE(i,j,v)+UnE(i-1,j,v))*((ht*D)/(hx^2)) + (UnE(i,j+1,v)-2*UnE(i,j,v)+UnE(i,j-1,v))*((ht*D)/(hy^2))+ UnE(i,j,v);
 
+            end
         end
     end
-end
 %Adding BC
 UnE(1,1:Nx,v+1) = UTB;
 UnE(Ny,1:Nx,v+1) = UBB;

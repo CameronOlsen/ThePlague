@@ -21,20 +21,10 @@ ht = 1
 
 
 %Discretly 
-m=1
-for n = Ax:hx:Bx
-    
-    x(m) =n;
-    m = m + 1;
 
-end
-m=1
-for n = Ay:hy:By
-    
-    y(m) = n;
-    m = m + 1;
+x = Ax:hx:Bx
+y = Ay:hy:By
 
-end
 
 
 
@@ -44,7 +34,8 @@ GLB = ((Bx-Ax)^2)*cos(((pi*Ax)/Bx))
 FLB = Ax*((Bx-Ax)^2)
 ULB = GLB + ((y-Ay)./(By-Ay)).*(FLB-GLB)
 
-
+% RB
+URB = 0;
 
 % TB: Top Boundary
 FTB = x.*((Bx-x).^2)
@@ -53,25 +44,25 @@ UTB = FTB
 % BB: Bottom Boundary
 GBB = ((Bx-x).^2).*cos(((pi.*x)./Bx));
 UBB = GBB;
-
 ULBT = ULB'
 
+
+Nt=300
 %Let make a big ass matrix
  U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB]
- 
- 
- % Setup only temporary
- D = .1
- Nt=4
  
  
 % Implicit Method
 
 Nxy= Nx*Ny
-ht = 1
-D = .001
+ht = .01
+D = .1
+
+
 Lambx = (D*ht)/(hx^2)
 Lamby = (D*ht)/(hy^2)
+
+
 %Matrix of Coefficeints 
 A = zeros(Nxy,Nxy);
 for i = 2:Nxy
@@ -86,89 +77,46 @@ end
 
 A=A(1:Nxy,1:Nxy);
 
-%Initial U
-Un = zeros(Nxy,1)
-Un(5:Ny:Nxy) = UTB 
-Un(1:Ny:Nxy) = UBB
-Un(1:Ny)= ULB
 
-for k = 1:2
-    Un(:,:,k+1) = A\Un(:,:,k)
+
+
+ULBs = ULB(2:Nx-1)
+UTBs = UTB(2:Nx-1)
+UBBs = UBB(2:Nx-1)
+
+
+
+
+
+%Initial U
+UNEW = U
+
+
+
+
+for k = 1:Nt
     
-Un(5:Ny:Nxy,1,k+1) = UTB 
-Un(1:Ny:Nxy,1,k+1) = UBB
-Un(1:Ny,1,k+1)= ULB
-p = reshape(Un(:,:,k+1),[Nx,Ny])
-        h= surf(x,y,p)
+
+            
+   p = reshape(U,[Nxy,1])
+   
+   q = A\p
+   
+   UNEW = reshape(q,[Ny,Nx])
+   
+   UNEW(1,:) = UTB;
+   UNEW(Ny,:) = UBB;
+   UNEW(:,1) = ULB;
+   UNEW(Nx,:) = UNEW(Nx-1,:)
+
+
+    
+    
+            h= surf(x,y,UNEW)
         set(h,'edgecolor','none')
             drawnow;
             refreshdata(h)
+            U = UNEW
     end
 
 
-%Pentagonal Matrix Made now I just need to input B.C. and solve
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-% v=0
-% 
-% UnE = zeros(Ny,Nx,Nt)
-% UnE(:,:,1) = U
-% 
-% 
-% v=1
-% Nt=12
-% UnI = zeros(Ny,Nx,Nt)
-% UnI(:,:,1) = U
-% UnI(:,:,2) = U
-% 
-% for k = 0:ht:10
-%    v=v+1 
-% for i = 2:Ny-1
-%     for j = 2:Nx
-%         if j == Nx
-%          UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (-2*UnI(i,j,v)+2*UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1);    
-%         else
-%         UnI(i,j,v) = (UnI(i+1,j,v)-2*UnI(i,j,v)+UnI(i-1,j,v))*((ht*D)/(hx^2)) + (UnI(i,j+1,v)-2*UnI(i,j,v)+UnI(i,j-1,v))*((ht*D)/(hy^2))+ UnI(i,j,v-1);
-%         end
-%     end
-% end
-% %Adding BC
-% % Un(:,:,v+1) = [Un, zeros(Ny-1,1);zeros(1,Nx)]
-% UnE(1,1:Nx,v+1) = UTB;
-% UnE(Ny,1:Nx,v+1) = UBB;
-% 
-% UnE(:,1,v+1) = ULB;
-% % UnE(:,Nx+1,v+1) = UnE(:,Nx-1,v+1)
-% 
-% 
-% end
-%  
-% UnE

@@ -21,20 +21,10 @@ ht = 1
 
 
 %Discretly 
-m=1
-for n = Ax:hx:Bx
-    
-    x(m) =n;
-    m = m + 1;
 
-end
-m=1
-for n = Ay:hy:By
-    
-    y(m) = n;
-    m = m + 1;
+x = Ax:hx:Bx
+y = Ay:hy:By
 
-end
 
 
 
@@ -44,13 +34,8 @@ GLB = ((Bx-Ax)^2)*cos(((pi*Ax)/Bx))
 FLB = Ax*((Bx-Ax)^2)
 ULB = GLB + ((y-Ay)./(By-Ay)).*(FLB-GLB)
 
-% Right Boundary Condition U = Constant
-% Using the Upper or Lower Boundary Conidtions I can solve for the right side
-% RB: Right Boundary
-GRB = ((Bx-Bx)^2)*cos(((pi*Bx)/Bx))
-FRB = Bx*((Bx-Bx)^2)
-
-
+% RB
+URB = 0;
 
 % TB: Top Boundary
 FTB = x.*((Bx-x).^2)
@@ -59,56 +44,119 @@ UTB = FTB
 % BB: Bottom Boundary
 GBB = ((Bx-x).^2).*cos(((pi.*x)./Bx));
 UBB = GBB;
-
 ULBT = ULB'
 
+
+Nt=300
 %Let make a big ass matrix
  U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB]
- 
- 
- % Setup only temporary
- D = .1
- Nt=4
  
  
 % Implicit Method
 
 Nxy= Nx*Ny
-ht = 1
-D = .001
-Lambx = (D*ht)/(hx^2)
-Lamby = (D*ht)/(hy^2)
-%Matrix of Coefficeints 
-A = zeros(Nxy,Nxy);
-for i = 2:Nxy
-    for j = 2:Nxy-1
-       A(i,i) = -Lamby;
-       A(i,i+(Ny-1)) = -Lambx;
-       A(i,i+Ny) = 2*Lambx+2*Lamby+1;
-       A(i,i+(Ny+1)) = -Lambx;
-       A(i,i+2*Ny) = -Lamby ;
-    end
-end
+ht = .01
+D = .1
 
-A=A(1:Nxy,1:Nxy);
+
+% Lambx = (D*ht)/(hx^2)
+% Lamby = (D*ht)/(hy^2)
+% 
+% 
+% %Matrix of Coefficeints 
+% A = zeros(Nxy,Nxy);
+% for i = 2:Nxy
+%     for j = 2:Nxy-1
+%        A(i,i) = -Lamby;
+%        A(i,i+(Ny-1)) = -Lambx;
+%        A(i,i+Ny) = 2*Lambx+2*Lamby+1;
+%        A(i,i+(Ny+1)) = -Lambx;
+%        A(i,i+2*Ny) = -Lamby ;
+%     end
+% end
+% 
+% A=A(1:Nxy,1:Nxy);
+
+
+
+
+ULBs = ULB(2:Nx-1)
+UTBs = UTB(2:Nx-1)
+UBBs = UBB(2:Nx-1)
+
+
+
+%%
+%B.C vector
+bc=zeros(Nx-2,Ny-2);
+bc(1,:)=ULBs/hx^2;
+% bc(Nx-2,:)=UE/hx^2;  %Dirichlet B.Cs
+bc(:,1)=UBBs/hy^2; 
+bc(:,Ny-2)=UTBs/hy^2;  %Dirichlet B.Cs
+
+%bc(1,:)=-UnW/dx;
+bc(Nx-2,:)=URB/hx;  %Neumann B.Cs
+%bc(:,1)=-UnS/dy; 
+% bc(:,nx-2)=UnN/dy;  %Neumann B.Cs
+
+
+
+
+bc=D*ht*bc;
+
+
+
+
+
+
+%Calculating the coefficient matrix for the implicit scheme
+Ex=sparse(2:Nx-2,1:Nx-3,1,Nx-2,Nx-2);
+Ax=Ex+Ex'-2*speye(Nx-2);        %Dirichlet B.Cs
+%Ax(1,1)=-1; Ax(nx-2,nx-2)=-1;  %Neumann B.Cs
+Ey=sparse(2:Ny-2,1:Ny-3,1,Nxy,Ny);
+Az=Ey+Ey'-2*speye(Ny-2);        %Dirichlet B.Cs
+%Ay(1,1)=-1; Ay(ny-2,ny-2)=-1;  %Neumann B.Cs
+A=kron(Az/hy^2,speye(Nx-2))+kron(speye(Ny-2),Ax/hx^2);
+C=speye((Nx-2)*(Ny-2))-D*ht*A;
+
+
+
+
+
+
+
+
+
 
 %Initial U
-Un = zeros(Nxy,1)
-Un(5:Ny:Nxy) = UTB 
-Un(1:Ny:Nxy) = UBB
-Un(1:Ny)= ULB
+UNEW = zeros(Ny,Nx)
 
-for k = 1:2
-    Un(:,:,k+1) = A\Un(:,:,k)
+
+
+
+for k = 1:Nt
     
-Un(5:Ny:Nxy,1,k+1) = UTB 
-Un(1:Ny:Nxy,1,k+1) = UBB
-Un(1:Ny,1,k+1)= ULB
-p = reshape(Un(:,:,k+1),[Nx,Ny])
-        h= surf(x,y,p)
+
+            
+   p = reshape(U,[Nxy,1])
+   
+   q = C\p
+   
+   UNEW = reshape(q,[Ny,Nx])
+   
+   UNEW(1,:) = UTB;
+   UNEW(Ny,:) = UBB;
+   UNEW(:,1) = ULB;
+   UNEW(Nx,:) = UNEW(Nx-1,:)
+
+
+    
+    
+            h= surf(x,y,UNEW)
         set(h,'edgecolor','none')
             drawnow;
             refreshdata(h)
+            U = UNEW
     end
 
 
