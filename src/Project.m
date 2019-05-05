@@ -34,20 +34,6 @@ GLB = ((Bx-Ax)^2)*cos(((pi*Ax)/Bx));
 FLB = Ax*((Bx-Ax)^2);
 ULB = GLB + ((y-Ay)./(By-Ay)).*(FLB-GLB);
 
-% Right Boundary Condition U = Constant
-% Using the Upper or Lower Boundary Conidtions I can solve for the right side
-% RB: Right Boundary
-GRB = ((Bx-Bx)^2)*cos(((pi*Bx)/Bx));
-FRB = Bx*((Bx-Bx)^2);
-
-% Using Bottom BC U(x,ay) = GB(X) on bottom right corner but the whole right
-% % side is constant so the corner is the same as the rest
-% URB = GRB
-%                UNSURE
-% % Verification Using Top BC U(x,by) = FB(X)
-% URB_ver = FRB
-
-% Verified U(bx,y) = 0
 
 % TB: Top Boundary
 FTB = x.*((Bx-x).^2);
