@@ -13,8 +13,8 @@ By = pi;
 % L: number of points, h: interval, N: number of points
 Lx = Bx-Ax
 Ly = By-Ay
-Nx = 7;
-Ny = 7;
+Nx = 2;
+Ny = 2;
 hx = Lx/(Nx-1)
 hy = Ly/(Ny-1)
 ht = 1
@@ -94,16 +94,11 @@ UNEW = U
 
 
 
-for k = 1:Nt
-    
-
-            
+for k = 1:Nt       
    p = reshape(U,[Nxy,1])
-   
    q = A\p
-   
    UNEW = reshape(q,[Ny,Nx])
-   
+   %BC
    UNEW(1,:) = UTB;
    UNEW(Ny,:) = UBB;
    UNEW(:,1) = ULB;

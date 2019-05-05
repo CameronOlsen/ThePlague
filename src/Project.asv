@@ -11,20 +11,20 @@ By = pi;
 
 % Starting by Discretizing FEB 5th PAGE 2 BOT
 % L: number of points, h: interval, N: number of points
-Lx = Bx-Ax;
-Ly = By-Ay;
+Lx = Bx-Ax
+Ly = By-Ay
 Nx = 10;
 Ny = 10;
-Bt=100;
-hx = Lx/(Nx-1);
-hy = Ly/(Ny-1);
+Bt=10;
+hx = Lx/(Nx-1)
+hy = Ly/(Ny-1)
 
 
 
 %Discretly 
 
-x = Ax:hx:Bx;
-y = Ay:hy:By;
+x = Ax:hx:Bx
+y = Ay:hy:By
 
 
 
@@ -43,7 +43,7 @@ UTB = FTB;
 GBB = ((Bx-x).^2).*cos(((pi.*x)./Bx));
 UBB = GBB;
 
-ULBT = ULB';
+ULBT = ULB'
 
 %Let make a big ass matrix
  U = [UTB ;ULBT(2:Ny-1), zeros(Ny-2,Nx-1); UBB];
@@ -54,21 +54,21 @@ ULBT = ULB';
  
  % Von Neumann Stability Method
 %  ht = (hx^2)/(D*4)
-ht = ((hx^2)*(hy^2))/(2*D*((hx^2)+(hy^2)));
+ht = ((hx^2)*(hy^2))/(2*D*((hx^2)+(hy^2)))
  Nt=round(Bt/ht)-1;
  
  
 % It Begins Explicit 
 
-v=0;
+v=0
 
 UnE = zeros(Ny,Nx,Nt);
 UnE(:,:,1) = U;
-Desired_Error = 10^-7;
-Error=1;
+E=1
+while E > 10^-5
     %Initializing Time Step
     for k = 0:ht:Bt
-       v=v+1; 
+       v=v+1 
        %Space Step X
         for j = 2:Nx
         %Space Step Y
@@ -92,12 +92,9 @@ Error=1;
             set(h,'edgecolor','none')
                 drawnow;
                 refreshdata(h)
-                if max(max(abs(UnE(:,:,v+1)-UnE(:,:,v))))< Desired_Error
-                    Error = max(max(abs(UnE(:,:,v+1)-UnE(:,:,v))));
-                    break
-                end
+E = max(max(abs(UnE(:,:,v+1)-UnE(:,:,v))))
     end
-
+end
  UnE;
 toc
 
