@@ -1,6 +1,7 @@
 %Housekeeping
 clc 
 clear 
+close
 tic
 % Domain Initialization
 % Domain: -pi<X<pi   -pi<y<pi
@@ -15,10 +16,14 @@ Lx = Bx-Ax;
 Ly = By-Ay;
 Nx = 10;
 Ny = 10;
-Bt=100;
+Bt=20;
 hx = Lx/(Nx-1);
 hy = Ly/(Ny-1);
 
+
+%Checkpointing
+
+check='check.mat';
 
 
 %Discretly 
@@ -57,18 +62,21 @@ ULBT = ULB';
 ht = ((hx^2)*(hy^2))/(2*D*((hx^2)+(hy^2)));
  Nt=round(Bt/ht)-1;
  
+
+ 
+ 
+ 
  
 % It Begins Explicit 
-
 v=0;
-
+c=1;
 UnE = zeros(Ny,Nx,Nt);
 UnE(:,:,1) = U;
-Desired_Error = 10^-7;
+Desired_Error = 10^-70;
 Error=1;
     %Initializing Time Step
     for k = 0:ht:Bt
-       v=v+1; 
+       v=v+1;
        %Space Step X
         for j = 2:Nx
         %Space Step Y
@@ -92,10 +100,24 @@ Error=1;
             set(h,'edgecolor','none')
                 drawnow;
                 refreshdata(h)
+                
+                colormap gray
+                 title('Explicit Scheme','fontsize',40)
+                 xlabel('X','fontsize',50) 
+                 ylabel('Y','fontsize',50) 
+                 zlabel('U','fontsize',50)              
+                 colorbar
+                 
                 if max(max(abs(UnE(:,:,v+1)-UnE(:,:,v))))< Desired_Error
                     Error = max(max(abs(UnE(:,:,v+1)-UnE(:,:,v))));
                     break
+                    
                 end
+                if mod(v,100) == 0
+                   save(check);
+                end
+
+  UnE(round(Ny/2),round(Nx/2),v+1);
     end
 
  UnE;
